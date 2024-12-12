@@ -1,13 +1,11 @@
 use agb::display::object::{Graphics, OamManaged, Object, Sprite, TagMap};
 use agb::display::Priority;
-use agb::fixnum::{num, Vector2D};
+use agb::fixnum::Vector2D;
 use alloc::string::{String, ToString};
 
-pub mod block;
+use crate::BLUE_Z_SPRITES;
 
-static BLUE_Z: &Graphics = agb::include_aseprite!("gfx/cyan.aseprite");
-static BLUE_Z_SPRITES: &[Sprite] = BLUE_Z.sprites();
-static TAG_MAP: &TagMap = BLUE_Z.tags();
+pub mod block;
 
 #[derive(Clone)]
 pub enum BlockType {
