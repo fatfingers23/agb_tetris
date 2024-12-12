@@ -15,16 +15,16 @@
 | 16x32 | 16    | 32     |
 | 32x64 | 32    | 64     |
 
-
 ## Gameboy Screen Size in pixels
+
 WIDTH = 240 \
 HEIGHT = 160
 
 ## X/Y
+
 X - Horizontal \
 Y - Vertical \
 Vector2D(x, y)
-
 
 ## Positioning
 

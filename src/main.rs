@@ -3,7 +3,9 @@
 
 extern crate alloc;
 
-use agb::fixnum::num;
+use agb::display::object::Object;
+use agb::display::Priority;
+use agb::fixnum::{num, Vector2D};
 use agb::{
     display::{
         affine::AffineMatrix,
@@ -11,16 +13,17 @@ use agb::{
     },
     fixnum::Num,
 };
-// use agb_fixnum::Num;
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
+mod entities;
 
-static GRAPHICS: &Graphics = agb::include_aseprite!("gfx/cyan.aseprite");
-static SPRITES: &[Sprite] = GRAPHICS.sprites();
-static TAG_MAP: &TagMap = GRAPHICS.tags();
+static BLUE_Z: &Graphics = agb::include_aseprite!("gfx/cyan.aseprite");
+static BLUE_Z_SPRITES: &[Sprite] = BLUE_Z.sprites();
+static TAG_MAP: &TagMap = BLUE_Z.tags();
 
 #[agb::entry]
 fn main(mut gba: agb::Gba) -> ! {
-    use agb::input::Tri;
+    use agb::input::{Button, Tri};
 
     let gfx = gba.display.object.get_managed();
 
@@ -30,7 +33,7 @@ fn main(mut gba: agb::Gba) -> ! {
 
     let mut falling_block = Vec::new();
 
-    let mut block = gfx.object_sprite(&SPRITES[0]);
+    let mut block = gfx.object_sprite(&BLUE_Z_SPRITES[0]);
     block.set_affine_matrix(matrix.clone());
     block.show_affine(object::AffineMode::Affine);
     block.set_position((50, 50));
@@ -43,12 +46,25 @@ fn main(mut gba: agb::Gba) -> ! {
     let game_speed = 10;
     let mut current_game_speed = 10;
     let mut falling_pieced_moved = false;
+    let mut rotation: Num<i32, 16> = num!(0.);
+    let rotation_speed = num!(0.1);
+
     loop {
         vblank.wait_for_vblank();
         input.update();
 
-        if input.is_pressed(agb::input::Button::RIGHT) || input.is_pressed(agb::input::Button::LEFT)
-        {
+        if input.is_just_pressed(Button::A) {
+            let rotation_matrix = AffineMatrix::from_rotation(rotation);
+            for obj in falling_block.iter_mut() {
+                //Turns the sprite around
+                let idk = BLUE_Z_SPRITES.get(1).unwrap();
+                let idk_two = gfx.sprite(idk);
+                obj.set_sprite(idk_two);
+            }
+            rotation += rotation_speed;
+        }
+
+        if input.is_pressed(Button::RIGHT) || input.is_pressed(Button::LEFT) {
             let x_tri = input.x_tri();
             for obj in falling_block.iter_mut() {
                 falling_pieced_moved = true;
@@ -63,13 +79,7 @@ fn main(mut gba: agb::Gba) -> ! {
             }
         }
 
-        // if input.is_pressed(agb::input::Button::LEFT) {
-        //     for obj in falling_block.iter_mut() {
-        //         obj.set_position((obj.x() - 1, obj.y()));
-        //     }
-        // }
-
-        if input.is_pressed(agb::input::Button::DOWN) {
+        if input.is_pressed(Button::DOWN) {
             current_game_speed = 1;
         }
 
