@@ -1,24 +1,17 @@
-use agb::display::object::{Graphics, OamManaged, Object, Sprite, TagMap};
+use agb::display::object::{Graphics, OamManaged, Object, Sprite};
 use agb::display::Priority;
 use agb::fixnum::Vector2D;
-use alloc::string::{String, ToString};
-
-use crate::BLUE_Z_SPRITES;
+use block::BlockType;
 
 pub mod block;
 
 #[derive(Clone)]
-pub enum BlockType {
-    BlueZ,
-}
-
-#[derive(Clone)]
 pub enum EntityType {
-    Block(BlockType), //    Fruit(FruitType),
-                      //    Arrow(Arrows),
+    Block(BlockType),
 }
 
 /// A simple entity struct that holds the sprite and position for any sprite
+#[allow(dead_code)]
 pub struct Entity<'a> {
     pub type_of: EntityType,
     pub sprite: Object<'a>,
@@ -27,6 +20,7 @@ pub struct Entity<'a> {
     pub collision_mask: Vector2D<i32>,
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub struct CollisionEvent {
     pub direction: CollisionDirection,
@@ -35,24 +29,8 @@ pub struct CollisionEvent {
 /// impl of entity to allow for methods to interact with the sprite and setup
 impl<'a> Entity<'a> {
     pub fn new(object: &'a OamManaged, collision_mask: Vector2D<i32>, type_of: EntityType) -> Self {
-        //HACK picking the sprite for the entity. Feels real hacky
         let sprite = match type_of.clone() {
-            EntityType::Block(block) => match block {
-                BlockType::BlueZ => &BLUE_Z_SPRITES[0],
-
-                _ => {
-                    panic!("Not a valid fruit type");
-                }
-            },
-            //            EntityType::Arrow(direction) => match direction {
-            //                Down => Down.sprite(),
-            //                _ => {
-            //                    panic!("Not a valid arrow type");
-            //                }
-            //            },
-            _ => {
-                panic!("Not a valid entity type");
-            }
+            EntityType::Block(block) => &block.sprites()[0],
         };
 
         let mut sprite_object = object.object_sprite(sprite);
@@ -81,11 +59,12 @@ impl<'a> Entity<'a> {
             .set_y(self.position.y as u16);
     }
 
-    pub fn collision_check(
+    pub fn _collision_check(
         &mut self,
         other_pos: Vector2D<i32>,
         other_collision_mask: Vector2D<i32>,
     ) -> Option<CollisionEvent> {
+        //TODO Start from a old project I'm sure will be changed
         let x = (self.position.x - other_pos.x) * (self.position.x - other_pos.x);
         let y = (self.position.y - other_pos.y) * (self.position.y - other_pos.y);
 
@@ -108,23 +87,23 @@ impl<'a> Entity<'a> {
                 }
             } else {
                 if dx > 0 {
-                    if direction.to_string() == CollisionDirection::Up.to_string() {
+                    if direction.as_str() == CollisionDirection::Up.as_str() {
                         direction = CollisionDirection::UpperRight
-                    } else if direction.to_string() == CollisionDirection::Down.to_string() {
+                    } else if direction.as_str() == CollisionDirection::Down.as_str() {
                         direction = CollisionDirection::BottomRight
                     } else {
                         direction = CollisionDirection::Right
                     }
-                    direction = CollisionDirection::Right
+                //                    direction = CollisionDirection::Right
                 } else {
-                    if direction.to_string() == CollisionDirection::Up.to_string() {
+                    if direction.as_str() == CollisionDirection::Up.as_str() {
                         direction = CollisionDirection::UpperLeft
-                    } else if direction.to_string() == CollisionDirection::Down.to_string() {
+                    } else if direction.as_str() == CollisionDirection::Down.as_str() {
                         direction = CollisionDirection::BottomLeft
                     } else {
                         direction = CollisionDirection::Left
                     }
-                    direction = CollisionDirection::Left
+                    //                    direction = CollisionDirection::Left
                 }
             };
 
@@ -136,6 +115,7 @@ impl<'a> Entity<'a> {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Debug)]
 pub enum CollisionDirection {
     Up,
@@ -149,18 +129,19 @@ pub enum CollisionDirection {
     None,
 }
 
+#[allow(dead_code)]
 impl CollisionDirection {
-    pub fn to_string(&self) -> String {
+    pub fn as_str(&self) -> &str {
         match self {
-            CollisionDirection::Up => "Up".to_string(),
-            CollisionDirection::Down => "Down".to_string(),
-            CollisionDirection::Left => "Left".to_string(),
-            CollisionDirection::Right => "Right".to_string(),
-            CollisionDirection::UpperRight => "UpperRight".to_string(),
-            CollisionDirection::UpperLeft => "UpperLeft".to_string(),
-            CollisionDirection::BottomLeft => "BottomLeft".to_string(),
-            CollisionDirection::BottomRight => "BottomRight".to_string(),
-            CollisionDirection::None => "None".to_string(),
+            CollisionDirection::Up => "Up",
+            CollisionDirection::Down => "Down",
+            CollisionDirection::Left => "Left",
+            CollisionDirection::Right => "Right",
+            CollisionDirection::UpperRight => "UpperRight",
+            CollisionDirection::UpperLeft => "UpperLeft",
+            CollisionDirection::BottomLeft => "BottomLeft",
+            CollisionDirection::BottomRight => "BottomRight",
+            CollisionDirection::None => "None",
         }
     }
 }
