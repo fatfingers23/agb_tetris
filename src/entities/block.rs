@@ -1,4 +1,4 @@
-use crate::constraints::{CONTAINER_LEFT, CONTAINER_RIGHT};
+use crate::constraints::{CONTAINER_BOTTOM, CONTAINER_LEFT, CONTAINER_RIGHT};
 
 use super::*;
 
@@ -104,7 +104,7 @@ impl<'a> Block<'a> {
     pub fn drop(&mut self, drop_amount: i32) {
         let previous_position = self.entity.position;
         let new = Vector2D::new(previous_position.x, previous_position.y + drop_amount);
-        if new.y >= 140 {
+        if new.y >= CONTAINER_BOTTOM {
             self.moving = false;
         }
         self.entity.position = (previous_position.x, previous_position.y + drop_amount).into();
